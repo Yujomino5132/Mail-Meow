@@ -7,7 +7,7 @@ export class OAuthDAO {
     const now = new Date().toISOString();
     const result = await this.db
       .prepare(
-        'INSERT INTO oauth_tokens (id, user_id, provider, access_token, refresh_token, expires_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO oauth_tokens (id, user_id, provider, access_token, refresh_token, expires_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       )
       .bind(data.id, data.user_id, data.provider, data.access_token, data.refresh_token, data.expires_at, now, now)
       .run();
@@ -36,9 +36,7 @@ export class OAuthDAO {
   async update(userId: string, data: Partial<OAuthRequest>): Promise<OAuth | null> {
     const now = new Date().toISOString();
     const result = await this.db
-      .prepare(
-        'UPDATE oauth_tokens SET access_token = ?, refresh_token = ?, expires_at = ?, updated_at = ? WHERE user_id = ?'
-      )
+      .prepare('UPDATE oauth_tokens SET access_token = ?, refresh_token = ?, expires_at = ?, updated_at = ? WHERE user_id = ?')
       .bind(data.access_token, data.refresh_token, data.expires_at, now, userId)
       .run();
 

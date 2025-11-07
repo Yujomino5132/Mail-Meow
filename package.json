@@ -1,37 +1,37 @@
 {
-	"name": "mail-meow",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"cf-typegen": "wrangler types",
-		"predeploy": "npm install && npm run prettier && npm run lint",
-		"deploy": "wrangler deploy --dry-run",
-		"postdeploy": "wrangler deploy",
-		"prettier": "prettier --write .",
-		"lint": "eslint --ext .ts,.tsx --fix .",
-		"dev": "wrangler dev",
-		"devRemote": "wrangler dev --remote",
-		"test": "vitest --run || 1"
-	},
-	"dependencies": {
-		"axios": "^1.13.2",
-		"bcryptjs": "^3.0.3",
-		"chanfana": "^2.8.3",
-		"hono": "^4.10.4",
-		"zod": "^4.1.12"
-	},
-	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20251107.0",
-		"@types/node": "24.10.0",
-		"@types/service-worker-mock": "^2.0.4",
-		"wrangler": "^4.46.0",
-		"vitest": "^4.0.8",
-		"eslint": "^9.39.x",
-		"eslint-config-prettier": "^10.1.x",
-		"eslint-plugin-prettier": "^5.5.x",
-		"globals": "^16.5.x",
-		"prettier": "^3.6.x",
-		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.46.x"
-	}
+  "name": "mail-meow",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "predeploy": "npm install && npm run prettier && npm run lint",
+    "deploy": "wrangler deploy --dry-run",
+    "postdeploy": "wrangler deploy",
+    "prettier": "prettier --write .",
+    "lint": "eslint --ext .ts,.tsx --fix .",
+    "dev": "wrangler dev",
+    "devRemote": "wrangler dev --remote",
+    "test": "vitest --run || 1"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
+    "chanfana": "^2.8.3",
+    "hono": "^4.10.4",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251107.0",
+    "@types/node": "24.10.0",
+    "@types/service-worker-mock": "^2.0.4",
+    "wrangler": "^4.46.0",
+    "vitest": "^4.0.8",
+    "eslint": "^9.39.x",
+    "eslint-config-prettier": "^10.1.x",
+    "eslint-plugin-prettier": "^5.5.x",
+    "globals": "^16.5.x",
+    "prettier": "^3.6.x",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.x"
+  }
 }

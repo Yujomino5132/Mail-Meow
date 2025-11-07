@@ -1,6 +1,7 @@
 # Microsoft 365 Personal Account OAuth Setup
 
 ## Overview
+
 Mail Meow now supports Microsoft 365 personal accounts (outlook.com, hotmail.com, live.com) for sending emails through the Microsoft Graph API.
 
 ## Setting up M365 OAuth App

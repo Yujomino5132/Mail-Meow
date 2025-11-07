@@ -37,6 +37,7 @@ This guide will help you set up OAuth for Microsoft personal accounts (Outlook.c
 ## Step 4: Get Authorization Code
 
 1. Construct the authorization URL:
+
 ```
 https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&scope=https://graph.microsoft.com/Mail.Send%20offline_access&response_mode=query
 ```
