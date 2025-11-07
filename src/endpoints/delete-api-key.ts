@@ -13,7 +13,6 @@ interface DeleteApiKeyResponse extends IResponse {
   message: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DeleteApiKeyEnv extends IEnv {
   DB: D1Database;
 }

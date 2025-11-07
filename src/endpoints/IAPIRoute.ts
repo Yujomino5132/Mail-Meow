@@ -1,7 +1,6 @@
 import { OpenAPIRoute } from 'chanfana';
 import { Context } from 'hono';
 import { InternalServerError } from '@/error';
-import { VoidUtil } from '@/utils';
 
 abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse, TEnv extends IEnv> extends OpenAPIRoute {
   async handle(c: APIContext<TEnv>) {
@@ -9,8 +8,7 @@ abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse,
       let body: unknown = {};
       try {
         body = await c.req.json();
-      } catch (_ignored: unknown) {
-        VoidUtil.void(_ignored);
+      } catch {
         body = {};
       }
       const request: TRequest = body as TRequest;
@@ -22,13 +20,13 @@ abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse,
 
         // Check if it's a service error with statusCode
         if ('statusCode' in error && typeof error.statusCode === 'number') {
-          return c.json({ error: error.message }, error.statusCode as any);
+          return c.json({ error: error.message }, error.statusCode as 200 | 201 | 400 | 401 | 403 | 404 | 500);
         }
       }
 
       console.warn('Responding with InternalServerError');
       const internalError = new InternalServerError();
-      return c.json({ error: internalError.message }, internalError.statusCode as any);
+      return c.json({ error: internalError.message }, 500);
     }
   }
 

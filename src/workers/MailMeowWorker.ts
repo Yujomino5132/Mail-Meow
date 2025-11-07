@@ -43,5 +43,5 @@ export class MailMeowWorker extends AbstractWorker {
     return this.app.fetch(request, env, ctx);
   }
 
-  protected async handleScheduled(_event: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {}
+  protected async handleScheduled(_event: ScheduledController, _env: Env, _ctx: ExecutionContext): Promise<void> {}
 }

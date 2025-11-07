@@ -16,7 +16,6 @@ interface RegisterUserResponse extends IResponse {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface RegisterUserEnv extends IEnv {
   DB: D1Database;
 }
@@ -78,7 +77,6 @@ export class RegisterUser extends IAPIRoute<RegisterUserRequest, RegisterUserRes
     }
 
     // Create new user
-    const userId = crypto.randomUUID();
     const passwordHash = await hashPassword(request.password);
 
     const user = await userDAO.create({

@@ -70,7 +70,7 @@ export class SendEmail extends IAPIRoute<SendEmailRequest, SendEmailResponse, Se
 
   protected async handleRequest(request: SendEmailRequest, env: SendEmailEnv, ctx: APIContext<SendEmailEnv>): Promise<SendEmailResponse> {
     const api_key = ctx.req.param('api_key');
-    const { to, subject, body, contentType = 'text', provider = 'gmail' } = request;
+    const { provider = 'gmail' } = request;
 
     const userDAO = new UserDAO(env.DB);
     const oauthDAO = new OAuthDAO(env.DB);

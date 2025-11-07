@@ -16,7 +16,6 @@ interface GenerateApiKeyResponse extends IResponse {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface GenerateApiKeyEnv extends IEnv {
   DB: D1Database;
 }
