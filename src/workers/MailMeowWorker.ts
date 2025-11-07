@@ -1,4 +1,4 @@
-import { fromHono } from 'chanfana';
+import { fromHono, HonoOpenAPIRouterType } from 'chanfana';
 import { Hono } from 'hono';
 import { AbstractWorker } from '@/base';
 import { SendEmail } from '@/endpoints/send-email';
@@ -11,30 +11,37 @@ import { DeleteApiKey } from '@/endpoints/delete-api-key';
 import { DeleteUser } from '@/endpoints/delete-user';
 
 export class MailMeowWorker extends AbstractWorker {
-  private app: Hono;
-  private openapi: any;
+  protected readonly app: Hono<{ Bindings: Env }>;
 
   constructor() {
     super();
-    this.app = new Hono();
-    this.openapi = fromHono(this.app, { docs_url: '/' });
-    this.setupRoutes();
-  }
 
-  private setupRoutes(): void {
+    const app: Hono<{
+      Bindings: Env;
+    }> = new Hono<{ Bindings: Env }>();
+    const openapi: HonoOpenAPIRouterType<{
+      Bindings: Env;
+    }> = fromHono(app, {
+      docs_url: '/docs',
+    });
+
     // Register API endpoints
-    this.openapi.post('/api/user', RegisterUser); // User registration
-    this.openapi.delete('/api/user', DeleteUser); // User deletion
-    this.openapi.post('/api/user/api_key', GenerateApiKey); // Generate API Key
-    this.openapi.delete('/api/user/api_key', DeleteApiKey); // Delete API Key
+    openapi.post('/api/user', RegisterUser); // User registration
+    openapi.delete('/api/user', DeleteUser); // User deletion
+    openapi.post('/api/user/api_key', GenerateApiKey); // Generate API Key
+    openapi.delete('/api/user/api_key', DeleteApiKey); // Delete API Key
 
-    this.openapi.post('/api/:api_key/oauth', BindOAuth); // Bind OAuth
-    this.openapi.put('/api/:api_key/oauth', RebindOAuth); // Rebind OAuth
-    this.openapi.delete('/api/:api_key/oauth', DeleteBoundOAuth); // Delete OAuth
-    this.openapi.post('/api/:api_key/email', SendEmail); // Send Email
+    openapi.post('/api/:api_key/oauth', BindOAuth); // Bind OAuth
+    openapi.put('/api/:api_key/oauth', RebindOAuth); // Rebind OAuth
+    openapi.delete('/api/:api_key/oauth', DeleteBoundOAuth); // Delete OAuth
+    openapi.post('/api/:api_key/email', SendEmail); // Send Email
+
+    this.app = openapi;
   }
 
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  protected async handleFetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     return this.app.fetch(request, env, ctx);
   }
+
+  protected async handleScheduled(_event: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {}
 }

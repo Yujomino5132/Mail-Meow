@@ -50,7 +50,7 @@ export class RegisterUser extends OpenAPIRoute {
   };
 
   async handle(request: Request, env: Env, context: any, data: any) {
-    const { email, password } = data.body;
+    const { email, password } = request.json();
     const userDAO = new UserDAO(env.DB);
 
     // Check if user already exists
