@@ -118,7 +118,7 @@ async function getAccessToken(provider: string, client_id: string, client_secret
         refresh_token,
       });
     } else if (provider === 'microsoft_personal') {
-      tokenUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+      tokenUrl = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token';
       requestData = new URLSearchParams({
         client_id,
         client_secret,
