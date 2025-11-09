@@ -6,8 +6,17 @@
 	"preview_urls": false,
 	"workers_dev": true,
 	"observability": {
-		"enabled": true,
-		"head_sampling_rate": 1
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true,
+			"persist": true,
+		},
+		"traces": {
+			"enabled": false,
+			"persist": true,
+			"head_sampling_rate": 1,
+		},
 	},
 	"placement": {
 		"mode": "off"
@@ -21,10 +30,10 @@
 	],
 	"secrets_store_secrets": [
 		{
-		"binding": "AES_ENCRYPTION_KEY_SECRET",
-		"store_id": "00000000000000000000000000000000",
-		"secret_name": "mail-meow-aes-encryption-key",
+			"binding": "AES_ENCRYPTION_KEY_SECRET",
+			"store_id": "00000000000000000000000000000000",
+			"secret_name": "mail-meow-aes-encryption-key",
 		},
 	],
-	"vars": {}
+	"vars": {},
 }
