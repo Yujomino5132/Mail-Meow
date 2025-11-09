@@ -11,7 +11,7 @@ abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse,
       } catch {
         body = {};
       }
-      const request: TRequest = body as TRequest;
+      const request: TRequest = { ...(body as TRequest), raw: c.req };
       const response: TResponse = await this.handleRequest(request, c.env as TEnv, c);
       return c.json(response);
     } catch (error: unknown) {
@@ -33,8 +33,9 @@ abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse,
   protected abstract handleRequest(request: TRequest, env: TEnv, ctx: APIContext<TEnv>): Promise<TResponse>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface IRequest {}
+interface IRequest {
+  raw: Request;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface IResponse {}

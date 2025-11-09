@@ -109,7 +109,10 @@ export class SendEmail extends IAPIRoute<SendEmailRequest, SendEmailResponse, Se
       }
 
       // Send email
-      await sendEmail(senderEmail, to, subject, text, tokenResult.accessToken, provider);
+      const originUrl: string = new URL(request.raw.url).origin; // https://example.com
+      const unsubscribeUrl: string = getUnsubscribeUrl(originUrl);
+      const processedBody: string = text + getFooter(unsubscribeUrl);
+      await sendEmail(senderEmail, to, subject, processedBody, tokenResult.accessToken, provider);
 
       return { message: 'The email was sent successfully.' };
     } catch (error) {
@@ -232,4 +235,24 @@ function createEmail(sender: string, recipient: string, subject: string, body: s
 
   // Use btoa for base64 encoding in Cloudflare Workers
   return btoa(email).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function getFooter(unsubscribeUrl: string): string {
+  return [
+    '',
+    '-----',
+    '',
+    'You are receiving this email because a request submitted through our platform triggered an email delivery action, or you previously authorized this application to send notifications on your behalf.',
+    '',
+    'If you believe this message was sent in error, please disregard it and review your account activity.',
+    '',
+    'This email is for informational purposes only and does not constitute any form of legal commitment or service guarantee. The platform is not responsible for losses caused by delays, errors, or security issues in email transmission.',
+    '',
+    'To stop receiving similar messages, please unsubscribe using the link below:',
+    unsubscribeUrl,
+  ].join('\r\n');
+}
+
+function getUnsubscribeUrl(originUrl: string) {
+  return originUrl + '/unsubscribe';
 }
