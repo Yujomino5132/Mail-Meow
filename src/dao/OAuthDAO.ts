@@ -1,12 +1,24 @@
 import { OAuth, OAuthRequest } from '@/model';
+import { encryptData, decryptData } from '@/crypto';
 
 export class OAuthDAO {
-  constructor(private db: D1Database) {}
+  constructor(
+    private db: D1Database,
+    private masterKey: string,
+  ) {}
 
   async create(data: OAuthRequest & { user_id: number }): Promise<OAuth> {
+    const { encrypted: encryptedClientId, iv: clientIdIv } = await encryptData(data.client_id, this.masterKey);
+    const { encrypted: encryptedClientSecret, iv: clientSecretIv } = await encryptData(data.client_secret, this.masterKey);
+    const { encrypted: encryptedRefreshToken, iv: refreshTokenIv } = await encryptData(data.refresh_token, this.masterKey);
+
+    const salt = JSON.stringify({ clientIdIv, clientSecretIv, refreshTokenIv });
+
     const result = await this.db
-      .prepare('INSERT INTO oauth (user_id, provider, client_id, client_secret, refresh_token) VALUES (?, ?, ?, ?, ?)')
-      .bind(data.user_id, data.provider, data.client_id, data.client_secret, data.refresh_token)
+      .prepare(
+        'INSERT INTO oauth (user_id, provider, encrypted_client_id, encrypted_client_secret, encrypted_refresh_token, salt) VALUES (?, ?, ?, ?, ?, ?)',
+      )
+      .bind(data.user_id, data.provider, encryptedClientId, encryptedClientSecret, encryptedRefreshToken, salt)
       .run();
 
     if (!result.success) {
@@ -31,10 +43,32 @@ export class OAuthDAO {
     return result || null;
   }
 
+  async getDecryptedOAuth(
+    userId: number,
+    provider: string,
+  ): Promise<{ client_id: string; client_secret: string; refresh_token: string } | null> {
+    const oauth = await this.findByUserIdAndProvider(userId, provider);
+    if (!oauth) return null;
+
+    const { clientIdIv, clientSecretIv, refreshTokenIv } = JSON.parse(oauth.salt);
+
+    const client_id = await decryptData(oauth.encrypted_client_id, clientIdIv, this.masterKey);
+    const client_secret = await decryptData(oauth.encrypted_client_secret, clientSecretIv, this.masterKey);
+    const refresh_token = await decryptData(oauth.encrypted_refresh_token, refreshTokenIv, this.masterKey);
+
+    return { client_id, client_secret, refresh_token };
+  }
+
   async update(id: number, data: Partial<OAuthRequest>): Promise<boolean> {
+    const { encrypted: encryptedClientId, iv: clientIdIv } = await encryptData(data.client_id!, this.masterKey);
+    const { encrypted: encryptedClientSecret, iv: clientSecretIv } = await encryptData(data.client_secret!, this.masterKey);
+    const { encrypted: encryptedRefreshToken, iv: refreshTokenIv } = await encryptData(data.refresh_token!, this.masterKey);
+
+    const salt = JSON.stringify({ clientIdIv, clientSecretIv, refreshTokenIv });
+
     const result = await this.db
-      .prepare('UPDATE oauth SET client_id = ?, client_secret = ?, refresh_token = ? WHERE id = ?')
-      .bind(data.client_id, data.client_secret, data.refresh_token, id)
+      .prepare('UPDATE oauth SET encrypted_client_id = ?, encrypted_client_secret = ?, encrypted_refresh_token = ?, salt = ? WHERE id = ?')
+      .bind(encryptedClientId, encryptedClientSecret, encryptedRefreshToken, salt, id)
       .run();
     return result.success && (result.meta.changes || 0) > 0;
   }

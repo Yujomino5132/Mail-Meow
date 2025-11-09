@@ -14,6 +14,7 @@ interface SendEmailResponse extends IResponse {
 
 interface SendEmailEnv extends IEnv {
   DB: D1Database;
+  MASTER_KEY: string;
 }
 
 export class SendEmail extends IAPIRoute<SendEmailRequest, SendEmailResponse, SendEmailEnv> {
@@ -70,7 +71,7 @@ export class SendEmail extends IAPIRoute<SendEmailRequest, SendEmailResponse, Se
     const { to, subject, text } = request;
 
     const userDAO = new UserDAO(env.DB);
-    const oauthDAO = new OAuthDAO(env.DB);
+    const oauthDAO = new OAuthDAO(env.DB, env.MASTER_KEY);
 
     // Get user by API key
     const user = await userDAO.findByApiKey(api_key);
@@ -87,7 +88,15 @@ export class SendEmail extends IAPIRoute<SendEmailRequest, SendEmailResponse, Se
     }
 
     const oauthRecord = oauthRecords[0]; // Use the first available OAuth provider
-    const { provider, client_id, client_secret, refresh_token } = oauthRecord;
+
+    // Decrypt OAuth credentials
+    const decryptedOAuth = await oauthDAO.getDecryptedOAuth(user.id, oauthRecord.provider);
+    if (!decryptedOAuth) {
+      throw new BadRequestError('Failed to decrypt OAuth credentials');
+    }
+
+    const { client_id, client_secret, refresh_token } = decryptedOAuth;
+    const provider = oauthRecord.provider;
 
     try {
       // Get Access Token

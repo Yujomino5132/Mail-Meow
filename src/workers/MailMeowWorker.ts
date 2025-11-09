@@ -9,6 +9,7 @@ import { DeleteBoundOAuth } from '@/endpoints/delete-oauth';
 import { RebindOAuth } from '@/endpoints/rebind-oauth';
 import { DeleteApiKey } from '@/endpoints/delete-api-key';
 import { DeleteUser } from '@/endpoints/delete-user';
+import { GenerateMasterKey } from '@/endpoints/generate-master-key';
 
 export class MailMeowWorker extends AbstractWorker {
   protected readonly app: Hono<{ Bindings: Env }>;
@@ -35,6 +36,8 @@ export class MailMeowWorker extends AbstractWorker {
     openapi.put('/api/:api_key/oauth', RebindOAuth); // Rebind OAuth
     openapi.delete('/api/:api_key/oauth', DeleteBoundOAuth); // Delete OAuth
     openapi.post('/api/:api_key/email', SendEmail); // Send Email
+
+    openapi.post('/api/crypto/generate-master-key', GenerateMasterKey); // Generate master key
 
     this.app = openapi;
   }
